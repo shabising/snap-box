@@ -1,0 +1,39 @@
+.toolbar-wrap { margin: 0 0 18px; }
+
+.toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+
+.toolbar__count { font-size: 13px; color: var(--muted); margin-right: auto; }
+
+.tb-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 0.5px solid rgba(0,0,0,0.12);
+  background: #ffffff;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.tb-btn:hover { border-color: var(--accent); color: var(--accent); }
+.tb-btn--danger:hover { border-color: var(--danger); color: var(--danger); background: #fff5f5; }
+
+.cat-filter { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.filter-pill {
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 0.5px solid rgba(0,0,0,0.12);
+  background: #ffffff;
+  color: var(--muted);
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.filter-pill:hover,
+.filter-pill--active { border-color: var(--accent); color: var(--accent); background: #eef2ff; }

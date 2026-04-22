@@ -1,0 +1,34 @@
+.drop-zone {
+  border: 1.5px dashed rgba(0,0,0,0.15);
+  border-radius: 16px;
+  padding: 48px 32px;
+  text-align: center;
+  cursor: pointer;
+  background: #ffffff;
+  transition: border-color 0.2s, background 0.2s;
+  margin-bottom: 24px;
+}
+
+.drop-zone:hover { border-color: var(--accent); }
+.drop-zone--active { border-color: var(--accent); background: #f0f4ff; }
+
+.drop-zone__icon { font-size: 2rem; margin-bottom: 12px; }
+.drop-zone__title { font-size: 1rem; font-weight: 500; margin-bottom: 6px; color: var(--text); }
+.drop-zone__sub { font-size: 13px; color: var(--muted); }
+
+.drop-zone__browse {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 8px 22px;
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.drop-zone__browse:hover { opacity: 0.88; }

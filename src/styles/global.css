@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --bg:       #f8f7f4;
+  --surface:  #ffffff;
+  --surface2: #f3f2ef;
+  --border:   rgba(0,0,0,0.1);
+  --accent:   #4f7ef8;
+  --text:     #1a1a1a;
+  --muted:    #888888;
+  --danger:   #e05252;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app { max-width: 1000px; margin: 0 auto; padding: 40px 24px 80px; }
+
+.app-header { margin-bottom: 28px; }
+.app-title { font-size: 1.5rem; font-weight: 600; color: var(--text); }
+.app-title span { color: var(--accent); }
+.app-subtitle { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+.app-stats { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+.dot { color: var(--border); }
+
+.image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+
+.empty-filter { text-align: center; padding: 64px 20px; color: var(--muted); }
+.empty-filter span { font-size: 2rem; display: block; margin-bottom: 10px; }
+.empty-filter p { font-size: 13px; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
