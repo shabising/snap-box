@@ -21,12 +21,7 @@ No backend, no cloud storage — everything runs in the browser.
 
 ## Getting Started
 
-```bash
-npm install
-npm start
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open (https://shabising.github.io/snap-box/) in your browser.
 
 ## Project Structure
 
