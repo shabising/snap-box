@@ -7,11 +7,11 @@ import './styles/global.css';
 
 export default function App() {
   const {
-    images, filtered, selected, filterCat, allCategories, totalSize,
+    images, filtered, selected, filterCat, allCategories, totalSize, errors,
     processFiles,
     deleteImage, renameImage, addCategory, removeCategory,
     toggleSelect, selectAll, deselectAll, deleteSelected, deleteAll,
-    setFilterCat,
+    setFilterCat, clearErrors,
   } = useImageManager();
 
   return (
@@ -31,6 +31,15 @@ export default function App() {
       </header>
 
       <DropZone onFiles={processFiles} />
+
+      {errors.length > 0 && (
+        <div className="error-box" role="alert">
+          {errors.map((err, i) => (
+            <p key={i}>⚠️ {err}</p>
+          ))}
+          <button className="error-close" onClick={clearErrors} aria-label="Close errors">✕</button>
+        </div>
+      )}
 
       {images.length > 0 && (
         <Toolbar

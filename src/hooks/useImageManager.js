@@ -1,29 +1,69 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
 export function useImageManager() {
-  const [images, setImages]     = useState([]);
-  const [selected, setSelected] = useState(new Set());
+  const [images, setImages]       = useState([]);
+  const [selected, setSelected]   = useState(new Set());
   const [filterCat, setFilterCat] = useState('All');
+  const [errors, setErrors]       = useState([]);
+
+  useEffect(() => {
+    return () => {
+      images.forEach((img) => URL.revokeObjectURL(img.previewUrl));
+    };
+  }, []);
 
   const processFiles = useCallback((files) => {
-    const imageFiles = Array.from(files).filter((f) => f.type.startsWith('image/'));
+    const newErrors = [];
+
+    const imageFiles = Array.from(files).filter((file) => {
+      // Type validation
+      if (!file.type.startsWith('image/')) {
+        newErrors.push(`"${file.name}" is not an image file.`);
+        return false;
+      }
+      // Size validation
+      if (file.size > MAX_FILE_SIZE) {
+        newErrors.push(`"${file.name}" exceeds 5MB limit.`);
+        return false;
+      }
+      // Duplicate check
+      const isDuplicate = images.some(
+        (img) => img.originalName === file.name && img.size === file.size
+      );
+      if (isDuplicate) {
+        newErrors.push(`"${file.name}" is already uploaded.`);
+        return false;
+      }
+      return true;
+    });
+
+    if (newErrors.length > 0) setErrors(newErrors);
+
     imageFiles.forEach((file) => {
       const previewUrl = URL.createObjectURL(file);
       const img = new Image();
       img.onload = () => {
-        setImages((prev) => [...prev, {
-          id:         crypto.randomUUID(),
-          name:       file.name.replace(/\.[^.]+$/, ''),
-          type:       file.type,
-          size:       file.size,
-          previewUrl,
-          width:      img.naturalWidth,
-          height:     img.naturalHeight,
-          categories: [],
-        }]);
+        setImages((prev) => [
+          ...prev,
+          {
+            id:           crypto.randomUUID(),
+            file,
+            previewUrl,
+            originalName: file.name,
+            customName:   file.name.replace(/\.[^.]+$/, ''),
+            size:         file.size,
+            type:         file.type,
+            width:        img.naturalWidth,
+            height:       img.naturalHeight,
+            categories:   [],
+          },
+        ]);
       };
       img.src = previewUrl;
     });
-  }, []);
+  }, [images]);
 
   const deleteImage = useCallback((id) => {
     setImages((prev) => {
@@ -34,8 +74,8 @@ export function useImageManager() {
     setSelected((prev) => { const next = new Set(prev); next.delete(id); return next; });
   }, []);
 
-  const renameImage  = useCallback((id, newName) => {
-    setImages((prev) => prev.map((i) => (i.id === id ? { ...i, name: newName } : i)));
+  const renameImage = useCallback((id, customName) => {
+    setImages((prev) => prev.map((i) => (i.id === id ? { ...i, customName } : i)));
   }, []);
 
   const addCategory = useCallback((id, cat) => {
@@ -80,6 +120,8 @@ export function useImageManager() {
     setFilterCat('All');
   }, [images]);
 
+  const clearErrors = useCallback(() => setErrors([]), []);
+
   const filtered = useMemo(
     () => (filterCat === 'All' ? images : images.filter((i) => i.categories.includes(filterCat))),
     [images, filterCat]
@@ -93,17 +135,11 @@ export function useImageManager() {
 
   const totalSize = useMemo(() => images.reduce((sum, i) => sum + i.size, 0), [images]);
 
-  useEffect(() => {
-  return () => {
-    images.forEach((img) => URL.revokeObjectURL(img.previewUrl));
-  };
-}, []);
-
   return {
-    images, filtered, selected, filterCat, allCategories, totalSize,
+    images, filtered, selected, filterCat, allCategories, totalSize, errors,
     processFiles,
     deleteImage, renameImage, addCategory, removeCategory,
     toggleSelect, selectAll, deselectAll, deleteSelected, deleteAll,
-    setFilterCat,
+    setFilterCat, clearErrors,
   };
 }
