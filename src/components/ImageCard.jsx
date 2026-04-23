@@ -25,28 +25,12 @@ export default function ImageCard({ image, selected, onToggle, onDelete, onRenam
 
       <div className="img-card__preview-wrap">
         {image.previewUrl
-          ? <img
-              className="img-card__preview"
-              src={image.previewUrl}
-              alt={`Preview of ${image.customName}`}
-            />
-          : <div className="img-card__placeholder" aria-label="Image placeholder">🖼️</div>
+          ? <img className="img-card__preview" src={image.previewUrl} alt={`Preview of ${image.customName}`} />
+          : <div className="img-card__placeholder">🖼️</div>
         }
         <div className="img-card__overlay">
-          <button
-            className="overlay-btn"
-            onClick={() => nameRef.current?.focus()}
-            aria-label="Rename image"
-          >
-            ✎ Rename
-          </button>
-          <button
-            className="overlay-btn danger"
-            onClick={() => onDelete(image.id)}
-            aria-label="Delete image"
-          >
-            🗑 Delete
-          </button>
+          <button className="overlay-btn" onClick={() => nameRef.current?.focus()}>✎ Rename</button>
+          <button className="overlay-btn danger" onClick={() => onDelete(image.id)}>🗑 Delete</button>
         </div>
       </div>
 

@@ -11,28 +11,64 @@
 .img-card--selected { border-color: var(--accent); border-width: 1.5px; }
 
 .img-card__check {
-    position: absolute;
-    top: 10px; left: 10px;
-    width: 22px; height: 22px;
-    border-radius: 6px;
-    border: 1.5px solid rgba(255,255,255,0.8);
-    background: rgba(255,255,255,0.6);
-    -webkit-backdrop-filter: blur(4px);
-    backdrop-filter: blur(4px);  cursor: pointer;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    transition: all 0.15s;
-    -webkit-user-select: none;
-    user-select: none;
+  position: absolute;
+  top: 10px; left: 10px;
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  border: 1.5px solid rgba(255,255,255,0.8);
+  background: rgba(255,255,255,0.6);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: all 0.15s;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .img-card__check--on { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
 
-.img-card__preview { width: 100%; height: 165px; object-fit: cover; display: block; }
+.img-card__preview-wrap { position: relative; overflow: hidden; }
+
+.img-card__preview { width: 100%; height: 165px; object-fit: cover; display: block; transition: transform 0.3s ease; }
 .img-card__placeholder { width: 100%; height: 165px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; background: var(--surface2); }
+
+.img-card:hover .img-card__preview { transform: scale(1.03); }
+
+.img-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 55%);
+  opacity: 0;
+  transition: opacity 0.25s;
+  display: flex;
+  align-items: flex-end;
+  padding: 10px;
+  gap: 8px;
+}
+
+.img-card:hover .img-card__overlay { opacity: 1; }
+
+.overlay-btn {
+  flex: 1;
+  padding: 7px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.overlay-btn:hover { background: rgba(255,255,255,0.28); }
+.overlay-btn.danger:hover { background: rgba(239,68,68,0.75); border-color: transparent; }
 
 .img-card__body { padding: 12px; }
 
