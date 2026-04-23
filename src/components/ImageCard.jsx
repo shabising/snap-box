@@ -31,6 +31,7 @@ export default function ImageCard({ image, selected, onToggle, onDelete, onRenam
             className="img-card__name"
             value={image.name}
             onChange={(e) => onRename(image.id, e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && nameRef.current?.blur()}
           />
           <span className="img-card__edit-icon" onClick={() => nameRef.current?.focus()}>✎</span>
         </div>

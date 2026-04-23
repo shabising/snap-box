@@ -1,5 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
-
+import { useState, useCallback, useMemo, useEffect } from 'react';
 export function useImageManager() {
   const [images, setImages]     = useState([]);
   const [selected, setSelected] = useState(new Set());
@@ -93,6 +92,12 @@ export function useImageManager() {
   }, [images]);
 
   const totalSize = useMemo(() => images.reduce((sum, i) => sum + i.size, 0), [images]);
+
+  useEffect(() => {
+  return () => {
+    images.forEach((img) => URL.revokeObjectURL(img.previewUrl));
+  };
+}, []);
 
   return {
     images, filtered, selected, filterCat, allCategories, totalSize,
