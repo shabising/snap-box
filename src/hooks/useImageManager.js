@@ -1,12 +1,13 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 export function useImageManager() {
   const [images, setImages]       = useState([]);
   const [selected, setSelected]   = useState(new Set());
   const [filterCat, setFilterCat] = useState('All');
   const [errors, setErrors]       = useState([]);
+  const [loading, setLoading]     = useState(false);
 
   useEffect(() => {
     return () => {
@@ -14,64 +15,68 @@ export function useImageManager() {
     };
   }, []);
 
-const processFiles = useCallback((files) => {
-  const newErrors = [];
+  const processFiles = useCallback((files) => {
+    const newErrors = [];
 
-  const imageFiles = Array.from(files).filter((file) => {
-    if (!file.type.startsWith('image/')) {
-      newErrors.push(`"${file.name}" is not an image file.`);
-      return false;
-    }
-    if (file.size > MAX_FILE_SIZE) {
-      newErrors.push(`"${file.name}" exceeds 5MB limit.`);
-      return false;
-    }
-    const isDuplicate = images.some(
-      (img) => img.originalName === file.name && img.size === file.size
-    );
-    if (isDuplicate) {
-      newErrors.push(`"${file.name}" is already uploaded.`);
-      return false;
-    }
-    return true;
-  });
+    const imageFiles = Array.from(files).filter((file) => {
+      if (!file.type.startsWith('image/')) {
+        newErrors.push(`"${file.name}" is not an image file.`);
+        return false;
+      }
+      if (file.size > MAX_FILE_SIZE) {
+        newErrors.push(`"${file.name}" exceeds 5MB limit.`);
+        return false;
+      }
+      const isDuplicate = images.some(
+        (img) => img.originalName === file.name && img.size === file.size
+      );
+      if (isDuplicate) {
+        newErrors.push(`"${file.name}" is already uploaded.`);
+        return false;
+      }
+      return true;
+    });
 
-  if (newErrors.length > 0) setErrors(newErrors);
+    if (newErrors.length > 0) setErrors(newErrors);
 
-  imageFiles.forEach((file) => {
-    try {
-      const previewUrl = URL.createObjectURL(file);
-      const img = new Image();
+    setLoading(true);
+    imageFiles.forEach((file) => {
+      try {
+        const previewUrl = URL.createObjectURL(file);
+        const img = new Image();
 
-      img.onerror = () => {
-        setErrors((prev) => [...prev, `"${file.name}" could not be loaded.`]);
-        URL.revokeObjectURL(previewUrl);
-      };
+        img.onerror = () => {
+          setErrors((prev) => [...prev, `"${file.name}" could not be loaded.`]);
+          URL.revokeObjectURL(previewUrl);
+          setLoading(false);
+        };
 
-      img.onload = () => {
-        setImages((prev) => [
-          ...prev,
-          {
-            id:           crypto.randomUUID(),
-            file,
-            previewUrl,
-            originalName: file.name,
-            customName:   file.name.replace(/\.[^.]+$/, ''),
-            size:         file.size,
-            type:         file.type,
-            width:        img.naturalWidth,
-            height:       img.naturalHeight,
-            categories:   [],
-          },
-        ]);
-      };
+        img.onload = () => {
+          setImages((prev) => [
+            ...prev,
+            {
+              id:           crypto.randomUUID(),
+              file,
+              previewUrl,
+              originalName: file.name,
+              customName:   file.name.replace(/\.[^.]+$/, ''),
+              size:         file.size,
+              type:         file.type,
+              width:        img.naturalWidth,
+              height:       img.naturalHeight,
+              categories:   [],
+            },
+          ]);
+          setLoading(false);
+        };
 
-      img.src = previewUrl;
-    } catch (err) {
-      setErrors((prev) => [...prev, `"${file.name}" could not be processed.`]);
-    }
-  });
-}, [images]);
+        img.src = previewUrl;
+      } catch (err) {
+        setErrors((prev) => [...prev, `"${file.name}" could not be processed.`]);
+        setLoading(false);
+      }
+    });
+  }, [images]);
 
   const deleteImage = useCallback((id) => {
     setImages((prev) => {
@@ -83,7 +88,8 @@ const processFiles = useCallback((files) => {
   }, []);
 
   const renameImage = useCallback((id, customName) => {
-    setImages((prev) => prev.map((i) => (i.id === id ? { ...i, customName } : i)));
+    const sanitized = customName.replace(/[<>:"/\\|?*]/g, '').slice(0, 100);
+    setImages((prev) => prev.map((i) => (i.id === id ? { ...i, customName: sanitized } : i)));
   }, []);
 
   const addCategory = useCallback((id, cat) => {
@@ -106,11 +112,11 @@ const processFiles = useCallback((files) => {
     });
   }, []);
 
-  const selectAll    = useCallback((filteredImages) => {
+  const selectAll = useCallback((filteredImages) => {
     setSelected(new Set(filteredImages.map((i) => i.id)));
   }, []);
 
-  const deselectAll  = useCallback(() => setSelected(new Set()), []);
+  const deselectAll = useCallback(() => setSelected(new Set()), []);
 
   const deleteSelected = useCallback(() => {
     selected.forEach((id) => {
@@ -144,7 +150,7 @@ const processFiles = useCallback((files) => {
   const totalSize = useMemo(() => images.reduce((sum, i) => sum + i.size, 0), [images]);
 
   return {
-    images, filtered, selected, filterCat, allCategories, totalSize, errors,
+    images, filtered, selected, filterCat, allCategories, totalSize, errors, loading,
     processFiles,
     deleteImage, renameImage, addCategory, removeCategory,
     toggleSelect, selectAll, deselectAll, deleteSelected, deleteAll,
