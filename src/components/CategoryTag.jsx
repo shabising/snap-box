@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import './CategoryTag.css';
 
 const PRESETS = ['Nature', 'Design', 'Architecture', 'Portrait', 'Abstract', 'Travel'];
@@ -9,7 +9,7 @@ function colorIndex(name) {
   return hash % 5;
 }
 
-export default function CategoryTag({ categories, onAdd, onRemove }) {
+const CategoryTag = memo(function CategoryTag({ categories, onAdd, onRemove }) {
   const [editing, setEditing] = useState(false);
   const [input, setInput]     = useState('');
 
@@ -51,4 +51,6 @@ export default function CategoryTag({ categories, onAdd, onRemove }) {
       </datalist>
     </div>
   );
-}
+});
+
+export default CategoryTag;

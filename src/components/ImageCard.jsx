@@ -1,36 +1,43 @@
-import { useRef } from 'react';
+import { useRef, memo } from 'react';
 import CategoryTag from './CategoryTag';
+import { useImageContext } from '../context/ImageContext';
 import { formatSize, formatType } from '../utils/format';
 import './ImageCard.css';
 
-export default function ImageCard({ image, selected, onToggle, onDelete, onRename, onAddCat, onRemoveCat }) {
+const ImageCard = memo(function ImageCard({ image }) {
+  const { selected, toggleSelect, deleteImage, renameImage, addCategory, removeCategory } = useImageContext();
   const nameRef = useRef(null);
+  const isSelected = selected.has(image.id);
 
   return (
     <article
-      className={`img-card ${selected ? 'img-card--selected' : ''}`}
+      className={`img-card ${isSelected ? 'img-card--selected' : ''}`}
       aria-label={`Image: ${image.customName}`}
     >
       <div
-        className={`img-card__check ${selected ? 'img-card__check--on' : ''}`}
-        onClick={() => onToggle(image.id)}
+        className={`img-card__check ${isSelected ? 'img-card__check--on' : ''}`}
+        onClick={() => toggleSelect(image.id)}
         role="checkbox"
-        aria-checked={selected}
+        aria-checked={isSelected}
         aria-label="Select image"
         tabIndex={0}
-        onKeyDown={(e) => e.key === ' ' && onToggle(image.id)}
+        onKeyDown={(e) => e.key === ' ' && toggleSelect(image.id)}
       >
-        {selected && '✓'}
+        {isSelected && '✓'}
       </div>
 
       <div className="img-card__preview-wrap">
         {image.previewUrl
           ? <img className="img-card__preview" src={image.previewUrl} alt={`Preview of ${image.customName}`} />
-          : <div className="img-card__placeholder">🖼️</div>
+          : <div className="img-card__placeholder" aria-label="Image placeholder">🖼️</div>
         }
         <div className="img-card__overlay">
-          <button className="overlay-btn" onClick={() => nameRef.current?.focus()}>✎ Rename</button>
-          <button className="overlay-btn danger" onClick={() => onDelete(image.id)}>🗑 Delete</button>
+          <button className="overlay-btn" onClick={() => nameRef.current?.focus()} aria-label="Rename image">
+            ✎ Rename
+          </button>
+          <button className="overlay-btn danger" onClick={() => deleteImage(image.id)} aria-label="Delete image">
+            🗑 Delete
+          </button>
         </div>
       </div>
 
@@ -40,7 +47,7 @@ export default function ImageCard({ image, selected, onToggle, onDelete, onRenam
             ref={nameRef}
             className="img-card__name"
             value={image.customName}
-            onChange={(e) => onRename(image.id, e.target.value)}
+            onChange={(e) => renameImage(image.id, e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && nameRef.current?.blur()}
             aria-label="Image name"
           />
@@ -78,10 +85,12 @@ export default function ImageCard({ image, selected, onToggle, onDelete, onRenam
 
         <CategoryTag
           categories={image.categories}
-          onAdd={(cat) => onAddCat(image.id, cat)}
-          onRemove={(cat) => onRemoveCat(image.id, cat)}
+          onAdd={(cat) => addCategory(image.id, cat)}
+          onRemove={(cat) => removeCategory(image.id, cat)}
         />
       </div>
     </article>
   );
-}
+});
+
+export default ImageCard;
