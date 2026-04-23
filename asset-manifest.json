@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/snap-box/static/css/main.547d311d.css",
-    "main.js": "/snap-box/static/js/main.0c1d37df.js",
+    "main.js": "/snap-box/static/js/main.b0ff7d37.js",
     "index.html": "/snap-box/index.html",
     "main.547d311d.css.map": "/snap-box/static/css/main.547d311d.css.map",
-    "main.0c1d37df.js.map": "/snap-box/static/js/main.0c1d37df.js.map"
+    "main.b0ff7d37.js.map": "/snap-box/static/js/main.b0ff7d37.js.map"
   },
   "entrypoints": [
     "static/css/main.547d311d.css",
-    "static/js/main.0c1d37df.js"
+    "static/js/main.b0ff7d37.js"
   ]
 }
