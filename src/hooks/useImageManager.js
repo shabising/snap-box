@@ -14,36 +14,40 @@ export function useImageManager() {
     };
   }, []);
 
-  const processFiles = useCallback((files) => {
-    const newErrors = [];
+const processFiles = useCallback((files) => {
+  const newErrors = [];
 
-    const imageFiles = Array.from(files).filter((file) => {
-      // Type validation
-      if (!file.type.startsWith('image/')) {
-        newErrors.push(`"${file.name}" is not an image file.`);
-        return false;
-      }
-      // Size validation
-      if (file.size > MAX_FILE_SIZE) {
-        newErrors.push(`"${file.name}" exceeds 5MB limit.`);
-        return false;
-      }
-      // Duplicate check
-      const isDuplicate = images.some(
-        (img) => img.originalName === file.name && img.size === file.size
-      );
-      if (isDuplicate) {
-        newErrors.push(`"${file.name}" is already uploaded.`);
-        return false;
-      }
-      return true;
-    });
+  const imageFiles = Array.from(files).filter((file) => {
+    if (!file.type.startsWith('image/')) {
+      newErrors.push(`"${file.name}" is not an image file.`);
+      return false;
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      newErrors.push(`"${file.name}" exceeds 5MB limit.`);
+      return false;
+    }
+    const isDuplicate = images.some(
+      (img) => img.originalName === file.name && img.size === file.size
+    );
+    if (isDuplicate) {
+      newErrors.push(`"${file.name}" is already uploaded.`);
+      return false;
+    }
+    return true;
+  });
 
-    if (newErrors.length > 0) setErrors(newErrors);
+  if (newErrors.length > 0) setErrors(newErrors);
 
-    imageFiles.forEach((file) => {
+  imageFiles.forEach((file) => {
+    try {
       const previewUrl = URL.createObjectURL(file);
       const img = new Image();
+
+      img.onerror = () => {
+        setErrors((prev) => [...prev, `"${file.name}" could not be loaded.`]);
+        URL.revokeObjectURL(previewUrl);
+      };
+
       img.onload = () => {
         setImages((prev) => [
           ...prev,
@@ -61,9 +65,13 @@ export function useImageManager() {
           },
         ]);
       };
+
       img.src = previewUrl;
-    });
-  }, [images]);
+    } catch (err) {
+      setErrors((prev) => [...prev, `"${file.name}" could not be processed.`]);
+    }
+  });
+}, [images]);
 
   const deleteImage = useCallback((id) => {
     setImages((prev) => {
